@@ -27,7 +27,7 @@ class Turma(db.Model):
         }
 
 class TurmaNaoIdentificada(Exception):
-    pass
+    print("Turma não identificada")
 
 def getTurmas():
     return escola["turmas"]
