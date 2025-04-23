@@ -1,17 +1,15 @@
 from config import db
 
-escola = {
-    "alunos": [],
-    "professores": [],
-    "turmas": []
-}
-
+class TurmaNaoIdentificada(Exception):
+    pass
 
 class Turma(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     descricao = db.Column(db.String(100), nullable=False)
-    professor_id = db.Column(db.Integer, db.ForeignKey('professor.id'))
     ativo = db.Column(db.Boolean, default=True, nullable=False)
+
+    professor = db.relationship('Professor', back_populates='turmas')
+    professor_id = db.Column(db.Integer, db.ForeignKey('professor.id'))
 
     def __init__(self, descricao, professor_id, ativo=True):
         self.descricao = descricao
@@ -26,44 +24,51 @@ class Turma(db.Model):
             'ativo': self.ativo
         }
 
-class TurmaNaoIdentificada(Exception):
-    print("Turma não identificada")
-
 def getTurmas():
-    return escola["turmas"]
+    turmas = Turma.query.all()
+    return [turma.to_dict() for turma in turmas], 200
 
 def obter_turma_por_id(id):
-    for turma in escola["turmas"]:
-        if turma["id"] == id:
-            return turma
-    return {"erro": "turma nao encontrada"}, 404
+    turma = Turma.query.get(id)
+    if not turma:
+        raise TurmaNaoIdentificada(f"Turma com ID {id} não encontrada.")
+    return turma.to_dict(), 200
 
 def criarTurma(dados):
-    if "id" not in dados or "nome" not in dados or "alunos" not in dados:
-        return {"erro": "informacoes incompletas para criar turma"}, 400
-    
-    nova_turma = {
-        "id": dados["id"],
-        "nome": dados["nome"],
-        "alunos": dados["alunos"]
-    }
-    escola["turmas"].append(nova_turma)
-    return nova_turma, 201
+    try:
+        descricao = dados['descricao']
+        professor_id = dados['professor_id']
+        ativo = dados.get('ativo', True)
+
+        turma = Turma(descricao=descricao, professor_id=professor_id, ativo=ativo)
+
+        db.session.add(turma)
+        db.session.commit()
+
+        return turma.to_dict(), 201
+    except KeyError as e:
+        return {"erro": f"Campo obrigatório ausente: {str(e)}"}, 400
 
 def updateTurma(idTurma, dados):
-    for turma in escola["turmas"]:
-        if turma["id"] == idTurma:
-            if "nome" in dados:
-                turma["nome"] = dados["nome"]
-            if "alunos" in dados:
-                turma["alunos"] = dados["alunos"]
-            return turma, 200
-    return {"erro": "turma nao encontrada"}, 404
+    turma = Turma.query.get(idTurma)
+    if not turma:
+        raise TurmaNaoIdentificada(f"Turma com ID {idTurma} não encontrada.")
+
+    if 'descricao' in dados:
+        turma.descricao = dados['descricao']
+    if 'professor_id' in dados:
+        turma.professor_id = dados['professor_id']
+    if 'ativo' in dados:
+        turma.ativo = dados['ativo']
+
+    db.session.commit()
+    return turma.to_dict(), 200
 
 def deleteTurma(idTurma):
-    turma_existe = any(turma["id"] == idTurma for turma in escola["turmas"])
-    if not turma_existe:
-        return {"erro": "turma nao encontrada"}, 404
+    turma = Turma.query.get(idTurma)
+    if not turma:
+        raise TurmaNaoIdentificada(f"Turma com ID {idTurma} não encontrada.")
 
-    escola["turmas"] = [turma for turma in escola["turmas"] if turma["id"] != idTurma]
+    db.session.delete(turma)
+    db.session.commit()
     return '', 204

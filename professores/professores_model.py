@@ -1,24 +1,24 @@
 from config import db
+from datetime import datetime, date
 
-escola = {
-    "alunos": [],
-    "professores": [],
-    "turmas": []
-    }
+class ProfessorNaoIdentificado(Exception):
+    pass
 
 class Professor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
-    idade = db.Column(db.Integer)
-    materia = db.Column(db.String(100))
+    idade = db.Column(db.Integer, nullable=False)
+    materia = db.Column(db.String(100), nullable=False)
     observacoes = db.Column(db.String(100))
+
+    turmas = db.relationship('Turma', back_populates='professor')
 
     def __init__(self, nome, idade, materia, observacoes):
         self.nome = nome
         self.idade = idade
         self.materia = materia
         self.observacoes = observacoes
-        
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -28,47 +28,54 @@ class Professor(db.Model):
             'observacoes': self.observacoes
         }
 
-
-class ProfessorNaoIdentificado(Exception):
-    pass
-
 def getProfessores():
-    return (escola["professores"])
-
+    professores = Professor.query.all()
+    return [professor.to_dict() for professor in professores], 200
+    
 def obter_professor_por_id(id):
-    for professor in escola["professores"]:
-        if professor.get("id") == id:
-            return professor, 200
-    return ({"error": "Professor não encontrado"}), 400
+    professor = Professor.query.get(id)
+    if not professor:
+        raise ProfessorNaoIdentificado(f"Professor com ID {id} não encontrado.")
+    return professor.to_dict(), 200
 
 def criarProfessor(dados):
-    if "id" not in dados or "nome" not in dados:
-        return ({"error": "professor sem nome"}), 400
-    
-    for professor in escola["professores"]:
-        if professor["id"] == dados["id"]:
-            return ({"error": "id ja utilizada"}), 400
-    
-    novo_professor = {
-        "id": dados["id"],
-        "nome": dados["nome"]
-    }
-    escola["professores"].append(novo_professor)
-    return (novo_professor), 200
+    try:
+        nome = dados['nome']
+        idade = dados['idade']
+        materia = dados['materia']
+        observacoes = dados.get('observacoes')
+
+        professor = Professor(nome=nome, idade=idade, materia=materia, observacoes=observacoes)
+
+        db.session.add(professor)
+        db.session.commit()
+
+        return professor.to_dict(), 201
+    except KeyError as e:
+        return {"erro": f"Campo obrigatório ausente: {str(e)}"}, 400
 
 def updateProfessor(idProfessor, dados):
-    for professor in escola["professores"]:
-        if professor["id"] == idProfessor:
-            if "nome" not in dados or dados["nome"] == '':
-                return ({"error": "professor sem nome"}), 400
-            professor["nome"] = dados["nome"]
-            return (professor), 200
-    return ({"error": "Professor não encontrado"}), 400
+    professor = Professor.query.get(idProfessor)
+    if not professor:
+        raise ProfessorNaoIdentificado(f"Professor com ID {idProfessor} não encontrado.")
+
+    if 'nome' in dados:
+        professor.nome = dados['nome']
+    if 'idade' in dados:
+        professor.idade = dados['idade']
+    if 'materia' in dados:
+        professor.materia = dados['materia']
+    if 'observacoes' in dados:
+        professor.observacoes = dados['observacoes']
+
+    db.session.commit()
+    return professor.to_dict(), 200
 
 def deleteProfessor(idProfessor):
-    professor_existe = any(prof['id'] == idProfessor for prof in escola["professores"])
-    if not professor_existe:
-        return ({"error": "Professor não encontrado"}), 400
+    professor = Professor.query.get(idProfessor)
+    if not professor:
+        raise ProfessorNaoIdentificado(f"Professor com ID {idProfessor} não encontrado.")
 
-    escola["professores"] = [prof for prof in escola["professores"] if prof["id"] != idProfessor]
-    return '', 200
+    db.session.delete(professor)
+    db.session.commit()
+    return '', 204
