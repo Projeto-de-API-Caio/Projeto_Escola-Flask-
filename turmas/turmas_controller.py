@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, Blueprint    
-import turmas_model as model
+from turmas import turmas_model as model
 
 turmas_blueprint = Blueprint('turmas', __name__)
 

@@ -1,13 +1,20 @@
+# Usar uma imagem base do Python 3.12
 FROM python:3.12-slim-bookworm
-# Serve como se fosse uma pasta virtual para o DOCKER copiar o projeto
 
+# Definir o diretório de trabalho no container
 WORKDIR /API-PROJETO
-#Serve para baixar todas os pacotes e dependencias que o projeto precisa que fica dentro do arquivo Requeriments
-COPY requeriments.txt .
-RUN pip install -r requeriments.txt --no-cache-dir
-#Serve para "copiar" o restante do projeto para o conteiner
+
+# Copiar o arquivo de requisitos para o container
+COPY requirements.txt .
+
+# Instalar as dependências do projeto
+RUN pip install -r requirements.txt --no-cache-dir
+
+# Copiar o restante do código para o container
 COPY . .
-#Serve para passar em qual porta a api vai estar disponivel
+
+# Expor a porta em que a API estará disponível
 EXPOSE 8000
-#É o passo final, tem como objetivo passar para o conteiner o que tem que ser executado
-["python", "app-py", "--host-0.0.0.0*. --port-8000]
+
+# Comando para rodar a aplicação Flask
+CMD ["python", "app.py", "--host=0.0.0.0", "--port=8000"]

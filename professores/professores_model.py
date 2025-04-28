@@ -1,5 +1,5 @@
 from config import db
-from datetime import datetime, date
+
 
 class ProfessorNaoIdentificado(Exception):
     pass
