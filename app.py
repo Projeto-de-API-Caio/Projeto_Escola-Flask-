@@ -1,9 +1,18 @@
 from flask import Flask, jsonify
-from config import db, app
+from config import db
 from alunos.alunos_controller import alunos_blueprint
 from professores.professores_controller import professores_blueprint
 from turmas.turmas_controller import turmas_blueprint
 from swagger.swagger_config import create_swagger
+
+
+app = Flask(__name__)
+
+app.config['HOST'] = '0.0.0.0'
+app.config['PORT'] = 8000
+app.config['DEBUG'] = True
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)  # <-- IMPORTANTE
 

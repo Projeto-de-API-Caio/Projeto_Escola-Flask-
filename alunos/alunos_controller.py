@@ -7,7 +7,8 @@ alunos_blueprint = Blueprint('alunos',__name__)
 @alunos_blueprint.route("/alunos", methods=["GET"])
 def exibir_alunos():
     print("LISTA DE TODOS ALUNOS:")
-    return  jsonify(model.getAlunos())
+    alunos, status = model.getAlunos()
+    return jsonify(alunos), status 
 
 @alunos_blueprint.route("/alunos/<int:id>", methods=["GET"])
 def exibir_alunos_por_id(id):

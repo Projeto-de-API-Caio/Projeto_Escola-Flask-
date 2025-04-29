@@ -8,9 +8,9 @@ class Turma(db.Model):
     descricao = db.Column(db.String(100), nullable=False)
     ativo = db.Column(db.Boolean, default=True, nullable=False)
 
-    professor = db.relationship('Professor', back_populates='turmas')
+    professor = db.relationship('Professor', back_populates='turma')
     professor_id = db.Column(db.Integer, db.ForeignKey('professor.id'))
-    aluno = db.relationship('Aluno', back_populates='turmas')
+    aluno = db.relationship('Aluno', back_populates='turma')
 
     def __init__(self, descricao, professor_id, ativo=True):
         self.descricao = descricao
