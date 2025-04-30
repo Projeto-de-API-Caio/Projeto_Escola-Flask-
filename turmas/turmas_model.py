@@ -4,13 +4,15 @@ class TurmaNaoIdentificada(Exception):
     pass
 
 class Turma(db.Model):
+    __tablename__='turma'
+    
     id = db.Column(db.Integer, primary_key=True)
     descricao = db.Column(db.String(100), nullable=False)
     ativo = db.Column(db.Boolean, default=True, nullable=False)
 
-    professor = db.relationship('Professor', back_populates='turma')
+    professor = db.relationship('Professor', back_populates='turmas')
     professor_id = db.Column(db.Integer, db.ForeignKey('professor.id'))
-    aluno = db.relationship('Aluno', back_populates='turma')
+    aluno = db.relationship('Aluno', back_populates='turmas')
 
     def __init__(self, descricao, professor_id, ativo=True):
         self.descricao = descricao
