@@ -67,18 +67,27 @@ def criarAluno(dados):
         nota1 = float(dados['nota_primeiro_semestre'])
         nota2 = float(dados['nota_segundo_semestre'])
         turma_id = dados.get('turma_id')
-
-
+        
+             
         turma = Turma.query.get(dados['turma_id'])
+        
         if turma is None:
-            return {"messege": "Turma não existe"}
-
+            print("turma não existe")
+            return {"messege": "Turma não existe"}, 404
+        
         aluno = Aluno(nome, data_nascimento, nota1, nota2, turma_id)
+        
+        if aluno:
+            
+            print(aluno)
+            
+            db.session.add(aluno)
+            db.session.commit()
 
-        db.session.add(aluno)
-        db.session.commit()
-
-        return aluno.to_dict(), 200
+            return aluno.to_dict(), 200
+        
+        else:
+            print("deu merda")
     except KeyError as e:
         return {"erro": f"Campo obrigatório ausente: {str(e)}"}, 400
         

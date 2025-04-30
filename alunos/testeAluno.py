@@ -22,8 +22,22 @@ class TestStringMethods(unittest.TestCase):
 
     def test_003_get_dados(self):
         # garante que a lista alunos traga dados criados
-        
-        r = requests.post('http://localhost:8000/alunos', json={"id": 1, "nome": "Filipe", "data_nascimento":"2000-01-01", "nota_primeiro_semestre":10.0, "nota_segundo_semestre":5.0, "turma_id":2})
+        _ = requests.post('http://localhost:8000/professores', json={"id": 3,
+                                                                "nome": "Caio",
+                                                                "idade":35,
+                                                                "materia":"API",
+                                                                "observacoes":"teste"})
+        _ = requests.post('http://localhost:8000/turmas', json={"id": 2,
+                                                                "descricao": "API",
+                                                                "ativo":True,
+                                                                "professor_id":1})
+        r = requests.post('http://localhost:8000/alunos', json={"id": 1,
+                                                                "nome": "Filipe",
+                                                                "data_nascimento":"2000-01-01",
+                                                                "nota_primeiro_semestre":10.0,
+                                                                "nota_segundo_semestre":5.0,
+                                                                "turma_id":1})
+        print(r)
         self.assertEqual(r.status_code, 200)
         r_lista = requests.get('http://localhost:8000/alunos')
         self.assertEqual(len(r_lista.json()), 1)
