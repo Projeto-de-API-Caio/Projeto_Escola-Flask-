@@ -31,13 +31,16 @@ class Professor(db.Model):
 
 def getProfessores():
     professores = Professor.query.all()
-    return [professor.to_dict() for professor in professores], 200
+    return [professor.to_dict() for professor in professores]
     
 def obter_professor_por_id(id):
-    professor = Professor.query.get(id)
-    if not professor:
-        raise ProfessorNaoIdentificado(f"Professor com ID {id} não encontrado.")
-    return professor.to_dict(), 200
+    try:
+        professor = Professor.query.get(id)
+        if not professor:
+            raise ProfessorNaoIdentificado('professor não encontrado')
+        return professor.to_dict(), 200
+    except ProfessorNaoIdentificado as e:
+        return {"erro": str(e)}, 400
 
 def criarProfessor(dados):
     try:
@@ -51,7 +54,7 @@ def criarProfessor(dados):
         db.session.add(professor)
         db.session.commit()
 
-        return professor.to_dict(), 201
+        return professor.to_dict(), 200
     except KeyError as e:
         return {"erro": f"Campo obrigatório ausente: {str(e)}"}, 400
 

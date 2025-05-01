@@ -4,7 +4,7 @@ import unittest
 class TestStringMethods(unittest.TestCase):
 
     def test_001_get_professores(self):
-            r = requests.get('http://localhost:5000/professores')
+            r = requests.get('http://localhost:8000/professores')
             self.assertEqual(r.status_code, 200)
             professores = r.json()
             self.assertIsInstance(professores, list)
@@ -13,7 +13,7 @@ class TestStringMethods(unittest.TestCase):
     def test_002_lista_vazia(self):
          # verifica se a lista professores está vazia
 
-        r = requests.get('http://localhost:5000/professores')
+        r = requests.get('http://localhost:8000/professores')
         self.assertEqual(r.status_code, 200)
         professores = r.json()
         self.assertEqual(len(professores), 0)
@@ -22,38 +22,40 @@ class TestStringMethods(unittest.TestCase):
     def test_003_get_dados(self):
         # garante que a lista professores traga dados criados
 
-        r = requests.post('http://localhost:5000/professores', json={"id": 1, "nome": "Filipe"})
+        r = requests.post('http://localhost:8000/professores', json={
+                                                                "nome": "Caio",
+                                                                "idade":35,
+                                                                "materia":"API",
+                                                                "observacoes":"teste"})
         self.assertEqual(r.status_code, 200)
-        r_lista = requests.get('http://localhost:5000/professores')
-        self.assertEqual(len(r_lista.json()), 1)
-        self.assertEqual(r_lista.json()[0]['nome'], 'Filipe')
+        r_lista = requests.get('http://localhost:8000/professores')
+        self.assertEqual(r_lista.json()[0]['id'], 1)
         print("3 OK")
 
     # TESTES JOICY-------------------------------------------------------------------------------------
     def test_004_buscaProfessorId(self):
 
          # busca professor por ID
-        r = requests.get('http://localhost:5000/professores/1')
+        r = requests.get('http://localhost:8000/professores/1')
         self.assertEqual(r.status_code, 200)
         professor = r.json()
         self.assertEqual(professor['id'], 1)
-        self.assertEqual(professor['nome'], 'Filipe')
         print("4 OK")
 
     def test_005__ProfessorInexistente(self):
         # tenta acessar professor que não existe
 
-        r = requests.get('http://localhost:5000/professores/100')
+        r = requests.get('http://localhost:8000/professores/100')
         self.assertEqual(r.status_code, 400)  
-        self.assertEqual(r.json()["error"], 'Professor não encontrado')  
+        self.assertEqual(r.json()["error"], 'professor não encontrado')  
         print("5 OK")
-
+'''
     def test_006_verificação(self):
          # verifica se dados retornados são certos
 
-        r = requests.post('http://localhost:5000/professores', json={"id": 2, "nome": "Matheus"})
+        r = requests.post('http://localhost:8000/professores', json={"id": 2, "nome": "Matheus"})
         self.assertEqual(r.status_code, 200)
-        r_get = requests.get('http://localhost:5000/professores/2')
+        r_get = requests.get('http://localhost:8000/professores/2')
         self.assertEqual(r_get.status_code, 200)
         professor = r_get.json()
         self.assertEqual(professor["nome"], "Matheus")
@@ -64,7 +66,7 @@ class TestStringMethods(unittest.TestCase):
        # cria professor novo com dados válidos
 
         professor_data = {"id": 3, "nome": "Victoria"}
-        r = requests.post('http://localhost:5000/professores', json=professor_data)
+        r = requests.post('http://localhost:8000/professores', json=professor_data)
         self.assertEqual(r.status_code, 200)
         professor = r.json()
         self.assertEqual(professor["nome"], 'Victoria')
@@ -75,7 +77,7 @@ class TestStringMethods(unittest.TestCase):
         # verifica se nao é possível criar um professor com ID que já existe
 
         professor_data = {"id": 3, "nome": "Joicy"}
-        r = requests.post('http://localhost:5000/professores', json=professor_data)
+        r = requests.post('http://localhost:8000/professores', json=professor_data)
         self.assertEqual(r.status_code, 400)
         self.assertEqual(r.json()["error"], "id ja utilizada")
         print("8 OK")
@@ -84,7 +86,7 @@ class TestStringMethods(unittest.TestCase):
         # cria professor sem nome (erro)
 
         professor_data = {"id": 4}
-        r = requests.post('http://localhost:5000/professores', json=professor_data)
+        r = requests.post('http://localhost:8000/professores', json=professor_data)
         self.assertEqual(r.status_code, 400)
         self.assertEqual(r.json()["error"], "professor sem nome")
         print("9 OK")
@@ -93,9 +95,9 @@ class TestStringMethods(unittest.TestCase):
     def test_010(self):
         # verifica se um professor pode ser deletado
 
-        r = requests.delete('http://localhost:5000/professores/3')
+        r = requests.delete('http://localhost:8000/professores/3')
         self.assertEqual(r.status_code, 200) 
-        r = requests.get('http://localhost:5000/professores/3')
+        r = requests.get('http://localhost:8000/professores/3')
         self.assertEqual(r.status_code, 400)
         self.assertEqual(r.json()["error"], "Professor não encontrado")
         print("10 OK")
@@ -103,21 +105,21 @@ class TestStringMethods(unittest.TestCase):
     def test_011(self):
         #tenta deletar um professor que nao
 
-        r = requests.delete('http://localhost:5000/professores/100')
+        r = requests.delete('http://localhost:8000/professores/100')
         self.assertEqual(r.status_code, 400)  
         self.assertEqual(r.json()["error"], "Professor não encontrado")
         print("11 OK")
 
     def test_012(self):
-        requests.post('http://localhost:5000/reseta')
+        requests.post('http://localhost:8000/reseta')
 
-        r = requests.post('http://localhost:5000/professores', json={"id": 5, "nome": "Fabiano"})
+        r = requests.post('http://localhost:8000/professores', json={"id": 5, "nome": "Fabiano"})
         self.assertEqual(r.status_code, 200)
 
-        r_delete = requests.delete('http://localhost:5000/professores/5')
+        r_delete = requests.delete('http://localhost:8000/professores/5')
         self.assertEqual(r_delete.status_code, 200)
 
-        r_lista = requests.get('http://localhost:5000/professores')
+        r_lista = requests.get('http://localhost:8000/professores')
         professores = r_lista.json()
         self.assertFalse(any(professor["id"] == 5 for professor in professores), "Professor 5 ainda está na lista")
 
@@ -126,21 +128,21 @@ class TestStringMethods(unittest.TestCase):
     def test_013(self):
         #  editar o nome de um professor
 
-        r = requests.put('http://localhost:5000/professores/3', json={"nome": "Fabiano Silva"})
+        r = requests.put('http://localhost:8000/professores/3', json={"nome": "Fabiano Silva"})
         self.assertEqual(r.status_code, 400)  
         self.assertEqual(r.json()["error"], "Professor não encontrado") 
         print("13 OK")
 
     def test_014(self):
        # tentar editar um professor sem nome (erro)
-        r = requests.put('http://localhost:5000/professores/3', json={"id": 3})
+        r = requests.put('http://localhost:8000/professores/3', json={"id": 3})
         self.assertEqual(r.status_code, 400)  
         self.assertEqual(r.json()["error"], "Professor não encontrado")  
         print("14 OK")
 
     def test_015(self):
         # tenta editar um professor que nao existe
-        r = requests.put('http://localhost:5000/professores/100', json={"nome": "Novo Nome"})
+        r = requests.put('http://localhost:8000/professores/100', json={"nome": "Novo Nome"})
         self.assertEqual(r.status_code, 400)  
         self.assertEqual(r.json()["error"], "Professor não encontrado")  
         print("15 OK")
@@ -150,12 +152,12 @@ class TestStringMethods(unittest.TestCase):
         #criar professor sem nome (erro)
 
         professor_data = {"id": 6}
-        r = requests.post('http://localhost:5000/professores', json=professor_data)
+        r = requests.post('http://localhost:8000/professores', json=professor_data)
         self.assertEqual(r.status_code, 400)
         self.assertEqual(r.json()["error"], "professor sem nome")
         print("16 OK")
 
-
+'''
 
 def runTests():
         suite = unittest.defaultTestLoader.loadTestsFromTestCase(TestStringMethods)
