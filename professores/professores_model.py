@@ -31,7 +31,7 @@ class Professor(db.Model):
 
 def getProfessores():
     professores = Professor.query.all()
-    return [professor.to_dict() for professor in professores], 200
+    return [professor.to_dict() for professor in professores]
     
 def obter_professor_por_id(id):
     professor = Professor.query.get(id)

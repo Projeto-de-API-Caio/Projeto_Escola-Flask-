@@ -29,7 +29,7 @@ class Turma(db.Model):
 
 def getTurmas():
     turmas = Turma.query.all()
-    return [turma.to_dict() for turma in turmas], 200
+    return [turma.to_dict() for turma in turmas]
 
 def obter_turma_por_id(id):
     turma = Turma.query.get(id)
