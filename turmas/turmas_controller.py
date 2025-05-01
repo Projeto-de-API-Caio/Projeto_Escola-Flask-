@@ -8,10 +8,12 @@ def exibir_turmas():
     print("LISTA DE TODAS TURMAS:")
     return jsonify(model.getTurmas())
 
-@turmas_blueprint.route("/turma/<int:id>", methods=["GET"])
+@turmas_blueprint.route("/turmas/<int:id>", methods=["GET"])
 def exibir_turma_por_id(id):
-    resultado = model.obter_turma_por_id(id)
-    return jsonify(resultado)
+    turma , status = model.obter_turma_por_id(id)
+    if status != 200:
+        return jsonify({"error": "Turma não encontrada"}), 400
+    return jsonify(turma)
 
 @turmas_blueprint.route("/turmas", methods=["POST"])
 def criar_turma():

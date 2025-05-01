@@ -109,7 +109,11 @@ class TestStringMethods(unittest.TestCase):
     def test_011(self):
         requests.post('http://localhost:8000/reseta')
 
-        r = requests.post('http://localhost:8000/professores', json={"id": 5, "nome": "Fabiano"})
+        r = requests.post('http://localhost:8000/professores', json={
+                                                                "nome": "Carlos",
+                                                                "idade":35,
+                                                                "materia":"banco de dados",
+                                                                "observacoes":"teste11"})
         self.assertEqual(r.status_code, 200)
 
         r_delete = requests.delete('http://localhost:8000/professores/5')
@@ -164,5 +168,4 @@ def runTests():
         unittest.TextTestRunner(verbosity=2,failfast=True).run(suite)
 
 if __name__ == '__main__':
-    unittest.main()
     unittest.main()

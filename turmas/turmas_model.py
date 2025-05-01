@@ -29,12 +29,12 @@ class Turma(db.Model):
 
 def getTurmas():
     turmas = Turma.query.all()
-    return [turma.to_dict() for turma in turmas], 200
+    return [turma.to_dict() for turma in turmas]
 
 def obter_turma_por_id(id):
     turma = Turma.query.get(id)
     if not turma:
-        raise TurmaNaoIdentificada(f"Turma com ID {id} não encontrada.")
+        raise TurmaNaoIdentificada(f"Turma não encontrada.")
     return turma.to_dict(), 200
 
 def criarTurma(dados):
