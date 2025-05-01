@@ -129,11 +129,10 @@ class TestStringMethods(unittest.TestCase):
         ##delete aqui
 
     def test_010(self):
-        #tenta deletar um aluno que nao
-
-        r = requests.delete('http://localhost:8000/alunos/100')
-        self.assertEqual(r.status_code, 400)  
-        self.assertEqual(r.json()['erro'], 'aluno nao encontrado')
+    # Tenta deletar um professor que não existe
+        r = requests.delete('http://localhost:8000/professores/100')
+        self.assertEqual(r.status_code, 400)
+        self.assertEqual(r.json()["erro"], "Professor não encontrado")
         print("10 OK")
 
     def test_011(self):

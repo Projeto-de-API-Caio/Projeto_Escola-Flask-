@@ -37,10 +37,10 @@ def obter_professor_por_id(id):
     try:
         professor = Professor.query.get(id)
         if not professor:
-            raise ProfessorNaoIdentificado('professor não encontrado')
+            raise ProfessorNaoIdentificado('Professor não encontrado')
         return professor.to_dict(), 200
     except ProfessorNaoIdentificado as e:
-        return {"erro": str(e)}, 400
+        return {"error": str(e)}, 400 
 
 def criarProfessor(dados):
     try:
@@ -56,30 +56,36 @@ def criarProfessor(dados):
 
         return professor.to_dict(), 200
     except KeyError as e:
-        return {"erro": f"Campo obrigatório ausente: {str(e)}"}, 400
+        return {"erro": "professor sem nome"}, 400
 
 def updateProfessor(idProfessor, dados):
-    professor = Professor.query.get(idProfessor)
-    if not professor:
-        raise ProfessorNaoIdentificado(f"Professor com ID {idProfessor} não encontrado.")
+    try:
+        professor = Professor.query.get(idProfessor)
+        if not professor:
+            raise ProfessorNaoIdentificado(f"Professor não encontrado")
 
-    if 'nome' in dados:
-        professor.nome = dados['nome']
-    if 'idade' in dados:
-        professor.idade = dados['idade']
-    if 'materia' in dados:
-        professor.materia = dados['materia']
-    if 'observacoes' in dados:
-        professor.observacoes = dados['observacoes']
+        if 'nome' in dados:
+            professor.nome = dados['nome']
+        if 'idade' in dados:
+            professor.idade = dados['idade']
+        if 'materia' in dados:
+            professor.materia = dados['materia']
+        if 'observacoes' in dados:
+            professor.observacoes = dados['observacoes']
 
-    db.session.commit()
-    return professor.to_dict(), 200
+        db.session.commit()
+        return professor.to_dict(), 200
+    except ProfessorNaoIdentificado as e:
+        return {"erro": str(e)}, 400 
 
 def deleteProfessor(idProfessor):
-    professor = Professor.query.get(idProfessor)
-    if not professor:
-        raise ProfessorNaoIdentificado(f"Professor com ID {idProfessor} não encontrado.")
+    try:
+        professor = Professor.query.get(idProfessor)
+        if not professor:
+            raise ProfessorNaoIdentificado("Professor não encontrado")
 
-    db.session.delete(professor)
-    db.session.commit()
-    return '', 204
+        db.session.delete(professor)
+        db.session.commit()
+        return '', 204
+    except ProfessorNaoIdentificado as e:
+        return {"erro": str(e)}, 400
