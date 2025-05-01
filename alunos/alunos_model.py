@@ -54,10 +54,10 @@ def obter_aluno_por_id(id):
     try:
         aluno = Aluno.query.get(id)
         if not aluno:
-            raise AlunoNaoIdentificado(f"Aluno com ID {id} não encontrado.")
+            raise AlunoNaoIdentificado(f"aluno nao encontrado")
         return aluno.to_dict(), 200
     except AlunoNaoIdentificado as e:
-        return {"erro": str(e)}, 404
+        return {"erro": str(e)}, 400
         
 def criarAluno(dados):
     
@@ -73,7 +73,7 @@ def criarAluno(dados):
         
         if turma is None:
             print("turma não existe")
-            return {"messege": "Turma não existe"}, 404
+            return {"messege": "Turma não existe"}, 400
         
         aluno = Aluno(nome, data_nascimento, nota1, nota2, turma_id)
         
@@ -86,16 +86,15 @@ def criarAluno(dados):
 
             return aluno.to_dict(), 200
         
-        else:
-            print("deu merda")
+        
     except KeyError as e:
-        return {"erro": f"Campo obrigatório ausente: {str(e)}"}, 400
+        return {"erro": "aluno sem nome"}, 400
         
 def updateAluno(idAluno, dados):
     try:
         aluno = Aluno.query.get(idAluno)
         if not aluno:
-            raise AlunoNaoIdentificado(f"Aluno com ID {idAluno} não encontrado.")
+            raise AlunoNaoIdentificado(f"aluno nao encontrado")
 
         if 'nome' in dados:
             aluno.nome = dados['nome']
@@ -114,16 +113,17 @@ def updateAluno(idAluno, dados):
         db.session.commit()
         return aluno.to_dict(), 200
     except AlunoNaoIdentificado as e:
-        return {"erro": str(e)}, 404
+        return {"erro": str(e)}, 400
         
 def deleteAluno(idAluno):
     try:
         aluno = Aluno.query.get(idAluno)
         if not aluno:
-            raise AlunoNaoIdentificado(f"Aluno com ID {idAluno} não encontrado.")
+            raise AlunoNaoIdentificado(f"aluno nao encontrado")
 
         db.session.delete(aluno)
         db.session.commit()
-        return '', 204
+        return '', 200
     except AlunoNaoIdentificado as e:
-        return {"erro": str(e)}, 404
+        return {"erro": str(e)}, 400
+    
