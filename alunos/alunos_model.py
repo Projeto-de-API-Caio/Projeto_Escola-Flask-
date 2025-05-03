@@ -1,5 +1,7 @@
 from config import db
 from datetime import datetime, date
+from turmas.turmas_model import Turma
+
 
 class AlunoNaoIdentificado(Exception):
     pass
@@ -55,10 +57,7 @@ def obter_aluno_por_id(id):
         return {"erro": str(e)}, 404
         
 def criarAluno(dados):
-    turma = Turma.query.get(dados['turma_id'])
-    if turma is None:
-        return {"messege": "Turma não existe"}
-
+    
     try:
         nome = dados['nome']
         idade = dados.get('idade')
@@ -66,6 +65,11 @@ def criarAluno(dados):
         data_nascimento = datetime.strptime(dados['data_nascimento'], '%Y-%m-%d').date()
         nota1 = float(dados['nota_primeiro_semestre'])
         nota2 = float(dados['nota_segundo_semestre'])
+
+
+        turma = Turma.query.get(dados['turma_id'])
+        if turma is None:
+            return {"messege": "Turma não existe"}
 
         aluno = Aluno(nome, idade, turma_id, data_nascimento, nota1, nota2)
 
