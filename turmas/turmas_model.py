@@ -32,11 +32,14 @@ def getTurmas():
     return [turma.to_dict() for turma in turmas]
 
 def obter_turma_por_id(id):
-    turma = Turma.query.get(id)
-    if not turma:
-        raise TurmaNaoIdentificada(f"Turma não encontrada.")
-    return turma.to_dict(), 200
-
+    try:
+        turma = Turma.query.get(id)
+        if not turma:
+            raise TurmaNaoIdentificada(f"Turma não encontrada")
+        return turma.to_dict(), 200
+    except TurmaNaoIdentificada as e:
+        return {"erro": str(e)}, 400
+        
 def criarTurma(dados):
     try:
         descricao = dados['descricao']
@@ -48,24 +51,27 @@ def criarTurma(dados):
         db.session.add(turma)
         db.session.commit()
 
-        return turma.to_dict(), 201
+        return turma.to_dict(), 200
     except KeyError as e:
         return {"erro": f"Campo obrigatório ausente: {str(e)}"}, 400
 
 def updateTurma(idTurma, dados):
-    turma = Turma.query.get(idTurma)
-    if not turma:
-        raise TurmaNaoIdentificada(f"Turma com ID {idTurma} não encontrada.")
+    try:
+        turma = Turma.query.get(idTurma)
+        if not turma:
+            raise TurmaNaoIdentificada(f"Turma com ID {idTurma} não encontrada.")
 
-    if 'descricao' in dados:
-        turma.descricao = dados['descricao']
-    if 'professor_id' in dados:
-        turma.professor_id = dados['professor_id']
-    if 'ativo' in dados:
-        turma.ativo = dados['ativo']
+        if 'descricao' in dados:
+            turma.descricao = dados['descricao']
+        if 'professor_id' in dados:
+            turma.professor_id = dados['professor_id']
+        if 'ativo' in dados:
+            turma.ativo = dados['ativo']
 
-    db.session.commit()
-    return turma.to_dict(), 200
+        db.session.commit()
+        return turma.to_dict(), 200
+    except TurmaNaoIdentificada as e:
+        return {"erro": str(e)}, 400
 
 def deleteTurma(idTurma):
     turma = Turma.query.get(idTurma)

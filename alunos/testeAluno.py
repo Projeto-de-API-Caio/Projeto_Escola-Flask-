@@ -3,7 +3,6 @@ import unittest
 
 
 class TestStringMethods(unittest.TestCase): 
-
     
     def test_001_get_alunos(self):
         
@@ -21,7 +20,7 @@ class TestStringMethods(unittest.TestCase):
         alunos = r.json()
         self.assertEqual(len(alunos), 0)
         print("2 OK")
-
+    
     def test_003_get_dados(self):
         # garante que a lista alunos traga dados criados
         _ = requests.post('http://localhost:8000/professores', json={
@@ -39,7 +38,7 @@ class TestStringMethods(unittest.TestCase):
                                                                 "nota_primeiro_semestre":10.0,
                                                                 "nota_segundo_semestre":5.0,
                                                                 "turma_id":1})
-        print(r)
+        
         self.assertEqual(r.status_code, 200)
         r_lista = requests.get('http://localhost:8000/alunos')
         self.assertEqual(r_lista.json()[0]['id'], 1)
@@ -53,8 +52,11 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         aluno = r.json()
         self.assertEqual(aluno['id'], 1)
+        r = requests.delete('http://localhost:8000/alunos/1')
+        r = requests.delete('http://localhost:8000/professores/1')
+        r = requests.delete('http://localhost:8000/turmas/1')
         print("4 OK") 
-
+        
         ##colocar o delete aqui
 
     def test_005__AlunoInexistente(self):
@@ -67,7 +69,15 @@ class TestStringMethods(unittest.TestCase):
 
     def test_006_verificação(self):
          # verifica se dados retornados são certos
-
+        _ = requests.post('http://localhost:8000/professores', json={
+                                                                "nome": "Caio",
+                                                                "idade":35,
+                                                                "materia":"API2",
+                                                                "observacoes":"teste"})
+        _ = requests.post('http://localhost:8000/turmas', json={
+                                                                "descricao": "API2",
+                                                                "ativo":True,
+                                                                "professor_id":1})
         r = requests.post('http://localhost:8000/alunos', json={
                                                                 "nome": "Matheus",
                                                                 "data_nascimento":"1997-01-01",
@@ -80,13 +90,25 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(r_get.status_code, 200)
         aluno = r_get.json()
         self.assertEqual(aluno['id'], aluno_id)
+        r = requests.delete(f'http://localhost:8000/alunos/{aluno_id}')
+        r = requests.delete('http://localhost:8000/professores/1')
+        r = requests.delete('http://localhost:8000/turmas/1')
         print("6 OK")
+        
         ##delete aqui
 
     
     def test_007(self):
        # cria aluno novo com dados válidos
-
+        _ = requests.post('http://localhost:8000/professores', json={
+                                                                "nome": "Caio",
+                                                                "idade":35,
+                                                                "materia":"API3",
+                                                                "observacoes":"teste"})
+        _ = requests.post('http://localhost:8000/turmas', json={
+                                                                "descricao": "API3",
+                                                                "ativo":True,
+                                                                "professor_id":1})
         aluno_data = {"id": 1,
                       "nome": "Fabiano",
                       "data_nascimento":"2005-01-01",
@@ -98,7 +120,11 @@ class TestStringMethods(unittest.TestCase):
         aluno = r.json()
         aluno_id = r.json()['id']
         self.assertEqual(aluno['id'], aluno_id)
+        r = requests.delete(f'http://localhost:8000/alunos/{aluno_id}')
+        r = requests.delete('http://localhost:8000/professores/1')
+        r = requests.delete('http://localhost:8000/turmas/1')
         print("7 OK")
+
         ## delete aqui
 
     
@@ -114,29 +140,52 @@ class TestStringMethods(unittest.TestCase):
     # TESTE VICTORIA-----------------------------------------------------------------------------------
     def test_009(self):
         # verifica se um aluno pode ser deletado
-        _ = requests.post('http://localhost:8000/alunos', json={
+        _ = requests.post('http://localhost:8000/professores', json={
+                                                                "nome": "Caio",
+                                                                "idade":35,
+                                                                "materia":"API4",
+                                                                "observacoes":"teste"})
+        _ = requests.post('http://localhost:8000/turmas', json={
+                                                                "descricao": "API4",
+                                                                "ativo":True,
+                                                                "professor_id":1})
+        r = requests.post('http://localhost:8000/alunos', json={
                                                                 "nome": "Matheus",
                                                                 "data_nascimento":"1997-01-01",
                                                                 "nota_primeiro_semestre":8.0,
                                                                 "nota_segundo_semestre":8.0,
                                                                 "turma_id":1})
-        r = requests.delete('http://localhost:8000/alunos/3')
-        self.assertEqual(r.status_code, 204) 
-        r = requests.get('http://localhost:8000/alunos/3')
+        aluno_id = r.json()['id']
+        r = requests.delete(f'http://localhost:8000/alunos/{aluno_id}')
+        self.assertEqual(r.status_code, 200) 
+        r = requests.get(f'http://localhost:8000/alunos/{aluno_id}')
         self.assertEqual(r.status_code, 400)
         self.assertEqual(r.json()['erro'], 'aluno nao encontrado')
+        r = requests.delete(f'http://localhost:8000/alunos/{aluno_id}')
+        r = requests.delete('http://localhost:8000/professores/1')
+        r = requests.delete('http://localhost:8000/turmas/1')
         print("9 OK")
         ##delete aqui
 
     def test_010(self):
-    # Tenta deletar um professor que não existe
-        r = requests.delete('http://localhost:8000/professores/100')
-        self.assertEqual(r.status_code, 400)
-        self.assertEqual(r.json()["erro"], "Professor não encontrado")
+        #tenta deletar um aluno que nao
+
+        r = requests.delete('http://localhost:8000/alunos/100')
+        self.assertEqual(r.status_code, 400)  
+        self.assertEqual(r.json()['erro'], 'aluno nao encontrado')
         print("10 OK")
 
     def test_011(self):
-        
+        _ = requests.post('http://localhost:8000/professores', json={
+                                                                "nome": "Caio",
+                                                                "idade":35,
+                                                                "materia":"API5",
+                                                                "observacoes":"teste"})
+        _ = requests.post('http://localhost:8000/turmas', json={
+                                                                "descricao": "API5",
+                                                                "ativo":True,
+                                                                "professor_id":1})
+
         r = requests.post('http://localhost:8000/alunos', json={"nome": "Filipe",
                                                                 "data_nascimento":"2000-01-01",
                                                                 "nota_primeiro_semestre":10.0,
@@ -145,38 +194,61 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
 
         aluno_id = r.json()['id']
-        r_delete = requests.delete('http://localhost:8000/alunos/{aluno_id}')
-        self.assertEqual(r_delete.status_code, 204)
+        r_delete = requests.delete(f'http://localhost:8000/alunos/{aluno_id}')
+        self.assertEqual(r_delete.status_code, 200)
 
         r_lista = requests.get('http://localhost:8000/alunos')
         alunos = r_lista.json()
         self.assertFalse(any(aluno["id"] == aluno_id for aluno in alunos), "Aluno 5 ainda está na lista")
-
+        r = requests.delete('http://localhost:8000/professores/1')
+        r = requests.delete('http://localhost:8000/turmas/1')
         print("11 OK")
 
     def test_012(self):
         #  editar o nome de um aluno
-        r = requests.post('http://localhost:8000/alunos', json={"nome": "Filipe",
+        _ = requests.post('http://localhost:8000/professores', json={
+                                                                "nome": "Caio",
+                                                                "idade":35,
+                                                                "materia":"API6",
+                                                                "observacoes":"teste"})
+        _ = requests.post('http://localhost:8000/turmas', json={
+                                                                "descricao": "API6",
+                                                                "ativo":True,
+                                                                "professor_id":1})
+        f = requests.post('http://localhost:8000/alunos', json={"nome": "Filipe",
                                                                 "data_nascimento":"2000-01-01",
                                                                 "nota_primeiro_semestre":10.0,
                                                                 "nota_segundo_semestre":5.0,
                                                                 "turma_id":1})
         
-        r = requests.put('http://localhost:8000/alunos/3', json={"nome": "Fabiano Silva"})
-        self.assertEqual(r.status_code, 400)  
-        self.assertEqual(r.json()['erro'], 'aluno nao encontrado') 
+        aluno_id = f.json()['id']
+        r = requests.put(f'http://localhost:8000/alunos/{aluno_id}', json={"nome":"Fabiano Silva",
+                                                                          "data_nascimento":"2000-01-01",
+                                                                          "nota_primeiro_semestre":10.0,
+                                                                          "nota_segundo_semestre":5.0,
+                                                                          "turma_id":1})
+        
+        self.assertEqual(r.status_code, 200)  
+        self.assertEqual(r.json()['nome'], 'Fabiano Silva') 
+        r = requests.delete(f'http://localhost:8000/alunos/{aluno_id}')
+        r = requests.delete('http://localhost:8000/professores/1')
+        r = requests.delete('http://localhost:8000/turmas/1')
         print("12 OK")
 
     def test_013(self):
        # tentar editar um aluno sem nome (erro)
-        r = requests.put('http://localhost:8000/alunos/3', json={"id": 3})
+        r = requests.put('http://localhost:8000/alunos/1', json={"id": 1})
         self.assertEqual(r.status_code, 400)  
         self.assertEqual(r.json()['erro'], 'aluno nao encontrado')  
         print("13 OK")
 
     def test_014(self):
         # tenta editar um aluno que nao existe
-        r = requests.put('http://localhost:8000/alunos/100', json={"nome": "Novo Nome"})
+        r = requests.put('http://localhost:8000/alunos/100', json={"nome": "Novo Nome",
+                                                                   "data_nascimento":"2000-01-01",
+                                                                    "nota_primeiro_semestre":10.0,
+                                                                    "nota_segundo_semestre":5.0,
+                                                                    "turma_id":1})
         self.assertEqual(r.status_code, 400)  
         self.assertEqual(r.json()['erro'], 'aluno nao encontrado')  
         print("14 OK")

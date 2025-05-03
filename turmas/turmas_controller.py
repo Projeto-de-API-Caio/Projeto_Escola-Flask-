@@ -10,10 +10,8 @@ def exibir_turmas():
 
 @turmas_blueprint.route("/turmas/<int:id>", methods=["GET"])
 def exibir_turma_por_id(id):
-    turma , status = model.obter_turma_por_id(id)
-    if status != 200:
-        return jsonify({"error": "Turma não encontrada"}), 400
-    return jsonify(turma)
+    turma, status = model.obter_turma_por_id(id)
+    return jsonify(turma), status
 
 @turmas_blueprint.route("/turmas", methods=["POST"])
 def criar_turma():
@@ -23,9 +21,9 @@ def criar_turma():
 
 @turmas_blueprint.route("/turmas/<int:idTurma>", methods=["PUT"])
 def atualizar_turma(idTurma):
-    dados = request.get_json()
-    resultado, status = model.updateTurma(idTurma, dados)
-    return jsonify(resultado), status
+        dados = request.get_json()
+        resultado, status = model.updateTurma(idTurma, dados)
+        return jsonify(resultado), status
 
 @turmas_blueprint.route("/turmas/<int:idTurma>", methods=["DELETE"])
 def deletar_turma(idTurma):

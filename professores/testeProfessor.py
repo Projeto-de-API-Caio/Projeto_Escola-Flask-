@@ -29,17 +29,17 @@ class TestStringMethods(unittest.TestCase):
                                                                 "observacoes":"teste"})
         self.assertEqual(r.status_code, 200)
         r_lista = requests.get('http://localhost:8000/professores')
-        self.assertEqual(r_lista.json()[0]['id'], 1)
+        self.assertEqual(r_lista.json()[0]['id'], 2)
         print("3 OK")
 
     # TESTES JOICY-------------------------------------------------------------------------------------
     def test_004_buscaProfessorId(self):
 
          # busca professor por ID
-        r = requests.get('http://localhost:8000/professores/1')
+        r = requests.get('http://localhost:8000/professores/2')
         self.assertEqual(r.status_code, 200)
         professor = r.json()
-        self.assertEqual(professor['id'], 1)
+        self.assertEqual(professor['id'], 2)
         print("4 OK")
 
     def test_005__ProfessorInexistente(self):
@@ -91,6 +91,11 @@ class TestStringMethods(unittest.TestCase):
     # TESTE VICTORIA-----------------------------------------------------------------------------------
     def test_009(self):
         # verifica se um professor pode ser deletado
+        r = requests.post('http://localhost:8000/professores', json={
+                                                                "nome": "Caio",
+                                                                "idade":35,
+                                                                "materia":"API4",
+                                                                "observacoes":"teste"})
         r = requests.delete('http://localhost:8000/professores/3')
         self.assertEqual(r.status_code, 204) 
         r = requests.get('http://localhost:8000/professores/3')
