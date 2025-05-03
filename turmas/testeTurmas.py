@@ -4,7 +4,7 @@ import unittest
 class TestStringMethods(unittest.TestCase):  
     
     def teste_1_get_turmas_lista(self):
-        resp = requests.get('http://localhost:5000/turmas')
+        resp = requests.get('http://localhost:8000/turmas')
         if resp.status_code == 404:
             self.fail("pagina /turmas não encontrada")
 

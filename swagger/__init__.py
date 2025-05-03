@@ -6,5 +6,4 @@ api = Api(
     description='Uma API para gestão de alunos, professores e turmas',
     doc='/swagger', 
     mask_swagger=False, #desativa o x-field no swagger,
-    prefix="/PROJETO_ESCOLA-FLASK-"
 )
