@@ -32,6 +32,3 @@ def atualizar_aluno(idAluno):
 def deletar_aluno(idAluno):
     resposta, status = model.deleteAluno(idAluno)
     return (jsonify(resposta), status) if resposta else ('', status)
-
-
-

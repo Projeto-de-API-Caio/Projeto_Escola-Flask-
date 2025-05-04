@@ -118,12 +118,11 @@ def updateAluno(idAluno, dados):
 def deleteAluno(idAluno):
     try:
         aluno = Aluno.query.get(idAluno)
+        print("-------------")
         if not aluno:
             raise AlunoNaoIdentificado(f"aluno nao encontrado")
-
         db.session.delete(aluno)
         db.session.commit()
         return '', 200
     except AlunoNaoIdentificado as e:
         return {"erro": str(e)}, 400
-    

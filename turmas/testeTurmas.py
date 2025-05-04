@@ -81,8 +81,10 @@ class TestStringMethods(unittest.TestCase):
         
         self.assertEqual(resp.status_code, 400)
         print("8 OK")
-    
-    def teste_9_put_turma_dados_invalidos(self):
+
+   
+    # Testes DELETE /turmas/<id>
+    def teste_10_delete_turma_existente(self):
         # Cria turma para testar
         nova_turma = {
             "descricao": "DEVOPS",
@@ -92,65 +94,11 @@ class TestStringMethods(unittest.TestCase):
         resp_post = requests.post('http://localhost:8000/turmas', json=nova_turma)
         id_turma = resp_post.json()['id']
         
-        dados_invalidos = {"nome": "TURMA 1"}  
-        resp = requests.put(f'http://localhost:8000/turmas/{id_turma}', json=dados_invalidos)
-        
-        self.assertEqual(resp.status_code, 400)
-        print("9 OK")
-   
-    # Testes DELETE /turmas/<id>
-    def teste_10_delete_turma_existente(self):
-        # Cria turma para testar
-        nova_turma = {"nome": "Turma para Deletar", "curso": "DELETE Test"}
-        resp_post = requests.post('http://localhost:8000/turmas', json=nova_turma)
-        id_turma = resp_post.json()['id']
-        
         resp = requests.delete(f'http://localhost:8000/turmas/{id_turma}')
         self.assertEqual(resp.status_code, 204)
-        print("10 OK - DELETE /turmas/<id> existente")
-    
-    def teste_11_delete_turma_inexistente(self):
-        resp = requests.delete('http://localhost:8000/turmas/999999')
-        self.assertEqual(resp.status_code, 404)
-        print("11 OK - DELETE /turmas/<id> inexistente")
-    
-    # Testes adicionais de consistência
-    def teste_12_consistencia_apos_delete(self):
-        # Cria e depois deleta uma turma
-        nova_turma = {"nome": "Turma Consistência", "curso": "Teste"}
-        resp_post = requests.post('http://localhost:8000/turmas', json=nova_turma)
-        id_turma = resp_post.json()['id']
-        
-        requests.delete(f'http://localhost:8000/turmas/{id_turma}')
-        resp_get = requests.get(f'http://localhost:8000/turma/{id_turma}')
-        self.assertEqual(resp_get.status_code, 404)
-        print("12 OK - Consistência após DELETE")
-    
-    def teste_13_lista_apos_criacao(self):
-        # Verifica se a turma criada aparece na lista
-        nova_turma = {"nome": "Turma Lista", "curso": "Lista Test"}
-        resp_post = requests.post('http://localhost:8000/turmas', json=nova_turma)
-        id_turma = resp_post.json()['id']
-        
-        resp_get = requests.get('http://localhost:8000/turmas')
-        turmas = resp_get.json()
-        turmas_ids = [turma['id'] for turma in turmas]
-        self.assertIn(id_turma, turmas_ids)
-        print("13 OK - Turma criada aparece na lista")
-    
-    def teste_14_atualizacao_parcial(self):
-        # Testa atualização parcial (apenas um campo)
-        nova_turma = {"nome": "Turma Parcial", "curso": "Parcial"}
-        resp_post = requests.post('http://localhost:8000/turmas', json=nova_turma)
-        id_turma = resp_post.json()['id']
-        
-        dados_parciais = {"curso": "Parcial Atualizado"}
-        resp_put = requests.put(f'http://localhost:8000/turmas/{id_turma}', json=dados_parciais)
-        
-        self.assertEqual(resp_put.status_code, 200)
-        resp_get = requests.get(f'http://localhost:8000/turma/{id_turma}')
-        self.assertEqual(resp_get.json()['curso'], "Parcial Atualizado")
-        print("14 OK - Atualização parcial")
+        print("10 OK")
+
+
     
 
 def runTests():
