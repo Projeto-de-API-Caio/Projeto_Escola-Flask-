@@ -1,28 +1,33 @@
-from flask import Flask, jsonify, request
-import turmas_model as model
+from flask import Flask, jsonify, request, Blueprint    
+from turmas import turmas_model as model
 
-app = Flask(__name__)
+turmas_blueprint = Blueprint('turmas', __name__)
 
-@app.route("/turmas", methods=["GET"])
+@turmas_blueprint.route("/turmas", methods=["GET"])
 def exibir_turmas():
     print("LISTA DE TODAS TURMAS:")
-    return model.getTurmas()
+    return jsonify(model.getTurmas())
 
-@app.route("/turma/<int:id>", methods=["GET"])
+@turmas_blueprint.route("/turmas/<int:id>", methods=["GET"])
 def exibir_turma_por_id(id):
-    return jsonify(model.obter_turma_por_id(id)) 
+    turma, status = model.obter_turma_por_id(id)
+    return jsonify(turma), status
 
-@app.route("/turmas", methods=["POST"])
+@turmas_blueprint.route("/turmas", methods=["POST"])
 def criar_turma():
-    return jsonify(model.criarTurma())
+    dados = request.get_json()
+    resultado, status = model.criarTurma(dados)
+    return jsonify(resultado), status
 
-@app.route("/turmas/<int:idTurma>", methods=["PUT"])
+@turmas_blueprint.route("/turmas/<int:idTurma>", methods=["PUT"])
 def atualizar_turma(idTurma):
-    return jsonify(model.updateTurma(idTurma))
+        dados = request.get_json()
+        resultado, status = model.updateTurma(idTurma, dados)
+        return jsonify(resultado), status
 
-@app.route("/turmas/<int:idTurma>", methods=["DELETE"])
+@turmas_blueprint.route("/turmas/<int:idTurma>", methods=["DELETE"])
 def deletar_turma(idTurma):
-    return jsonify(model.deleteTurma(idTurma))
-
-if __name__ == "__main__":
-    app.run(debug=True)
+    resultado, status = model.deleteTurma(idTurma)
+    if status == 204:
+        return '', 204
+    return jsonify(resultado), status
