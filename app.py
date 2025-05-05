@@ -22,6 +22,7 @@ app.register_blueprint(alunos_blueprint)
 app.register_blueprint(professores_blueprint)
 app.register_blueprint(turmas_blueprint)
 
+
 @app.route('/')  # Adicionando a rota '/'
 def home():
     return jsonify({"message": "API rodando!"}), 200
