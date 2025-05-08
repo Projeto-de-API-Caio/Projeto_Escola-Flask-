@@ -86,6 +86,6 @@ def deleteProfessor(idProfessor):
 
         db.session.delete(professor)
         db.session.commit()
-        return '', 204
+        return '', 200
     except ProfessorNaoIdentificado as e:
         return {"erro": str(e)}, 400

@@ -54,7 +54,7 @@ def obter_aluno_por_id(id):
     try:
         aluno = Aluno.query.get(id)
         if not aluno:
-            raise AlunoNaoIdentificado(f"aluno nao encontrado")
+            raise AlunoNaoIdentificado("aluno nao encontrado")
         return aluno.to_dict(), 200
     except AlunoNaoIdentificado as e:
         return {"erro": str(e)}, 400

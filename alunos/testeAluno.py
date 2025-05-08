@@ -3,7 +3,12 @@ import unittest
 
 
 class TestStringMethods(unittest.TestCase): 
-    
+    '''
+    r = requests.delete('http://localhost:8000/professores/2')
+    r = requests.delete('http://localhost:8000/professores/3')
+    r = requests.delete('http://localhost:8000/turmas/2')
+    r = requests.delete('http://localhost:8000/turmas/3')
+    '''
     def test_001_get_alunos(self):
         
         r = requests.get('http://localhost:8000/alunos')
