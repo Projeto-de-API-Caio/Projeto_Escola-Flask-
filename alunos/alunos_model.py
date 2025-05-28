@@ -14,7 +14,7 @@ class Aluno(db.Model):
     nota_primeiro_semestre = db.Column(db.Float, nullable=False)
     nota_segundo_semestre = db.Column(db.Float, nullable=False)
     
-    turmas = db.relationship("Turma", back_populates="aluno")
+    turma = db.relationship("Turma", back_populates="aluno")
     turma_id = db.Column(db.Integer, db.ForeignKey('turma.id'), nullable=False)
 
     idade = db.Column(db.Integer, nullable=False)

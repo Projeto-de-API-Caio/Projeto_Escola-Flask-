@@ -1,13 +1,12 @@
-# Dockerfile corrigido
-FROM python:3.12-slim-bookworm
+FROM python:3.11-slim
 
-WORKDIR /API-PROJETO
-
-COPY requirements.txt .
-RUN pip install -r requirements.txt --no-cache-dir
+WORKDIR /app
 
 COPY . .
 
-EXPOSE 8000
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-CMD ["python", "app.py"]
+
+EXPOSE 5000
+
+CMD ["python", "app.py"] 
