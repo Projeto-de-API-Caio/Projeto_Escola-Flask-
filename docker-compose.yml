@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+  banco_postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: usuario
+      POSTGRES_PASSWORD: senha123
+      POSTGRES_DB: impacta_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  projeto_escola:
+    build:
+      context: ./Projeto_Escola-Flask-
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./Projeto_Escola-Flask-:/app
+    working_dir: /app
+    environment:
+      - DATABASE_URL=postgresql://usuario:senha123@banco_postgres:5432/impacta_db
+    depends_on:
+      - banco_postgres
+    command: flask run --host=0.0.0.0 --port=5000
+    networks:
+      - escola-net
+
+  reserva:
+    build:
+      context: ./reserva
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./reserva:/app
+    working_dir: /app
+    environment:
+      # Aqui não precisa do DATABASE_URL para Postgres, usa SQLite local
+      - API_PRINCIPAL_URL=http://projeto_escola:5000
+    command: flask run --host=0.0.0.0 --port=5001
+    depends_on:
+      - projeto_escola
+    networks:
+      - escola-net
+
+  atividade_service:
+    build:
+      context: ./atividade_service
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./atividade_service:/app
+    working_dir: /app
+    environment:
+      - API_PRINCIPAL_URL=http://projeto_escola:5000
+    command: flask run --host=0.0.0.0 --port=5002
+    depends_on:
+      - projeto_escola
+    networks:
+      - escola-net
+
+volumes:
+  pgdata:
+
+networks:
+  escola-net:
